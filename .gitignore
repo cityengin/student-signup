@@ -50,6 +50,8 @@ app.*.map.json
 # Presentation slides (Local only, do not push to GitHub)
 slides.tex
 slides.pdf
+main.tex
+main.pdf
 *.nav
 *.snm
 *.vrb
