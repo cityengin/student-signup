@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_signup/screens/form_lab/widgets/autovalidate_lab.dart';
 import 'package:student_signup/screens/form_lab/widgets/field_comparison_lab.dart';
 
 // [Form] Màn hình chính Form Lab phục vụ nghiên cứu và so sánh các cơ chế biểu mẫu
@@ -32,7 +33,7 @@ class FormLabScreen extends StatelessWidget {
               child: FieldComparisonLab(),
             ),
             _TabContainer(
-              child: Center(child: Text('AutovalidateMode Lab')),
+              child: AutovalidateLab(),
             ),
           ],
         ),
