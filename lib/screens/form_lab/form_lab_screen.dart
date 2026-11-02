@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_signup/screens/form_lab/widgets/field_comparison_lab.dart';
 
 // [Form] Màn hình chính Form Lab phục vụ nghiên cứu và so sánh các cơ chế biểu mẫu
 class FormLabScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class FormLabScreen extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           children: [
             _TabContainer(
-              child: Center(child: Text('TextField vs TextFormField Lab')),
+              child: FieldComparisonLab(),
             ),
             _TabContainer(
               child: Center(child: Text('AutovalidateMode Lab')),
