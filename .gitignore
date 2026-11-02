@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Presentation slides (Local only, do not push to GitHub)
+slides.tex
+slides.pdf
+*.nav
+*.snm
+*.vrb
