@@ -1,45 +1,59 @@
 import 'package:flutter/material.dart';
 
-// [Form] Màn hình chờ Form Lab, giữ chỗ cho tính năng thử nghiệm ở Vòng 2
+// [Form] Màn hình chính Form Lab phục vụ nghiên cứu và so sánh các cơ chế biểu mẫu
 class FormLabScreen extends StatelessWidget {
   const FormLabScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Form Lab'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.science_outlined,
-                size: 80,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Form Lab đang được xây dựng',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tính năng sẽ được phát triển và hoàn thiện ở Vòng 2.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                textAlign: TextAlign.center,
-              ),
+    // [Form] DefaultTabController quản lý 2 tab thí nghiệm
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Form Lab'),
+          centerTitle: true,
+          // [Form] TabBar cho phép cuộn ngang để tránh tràn chữ trên màn hình hẹp
+          bottom: const TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [
+              Tab(text: 'TextField vs TextFormField'),
+              Tab(text: 'AutovalidateMode'),
             ],
           ),
+        ),
+        // [Form] TabBarView dùng NeverScrollableScrollPhysics tránh xung đột vuốt ngang với cử chỉ khác
+        body: const TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            _TabContainer(
+              child: Center(child: Text('TextField vs TextFormField Lab')),
+            ),
+            _TabContainer(
+              child: Center(child: Text('AutovalidateMode Lab')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// [Form] Khung chứa từng tab có bề rộng tối đa 720 và cuộn dọc an toàn
+class _TabContainer extends StatelessWidget {
+  final Widget child;
+
+  const _TabContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: child,
         ),
       ),
     );
