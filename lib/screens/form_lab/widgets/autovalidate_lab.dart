@@ -80,7 +80,7 @@ class _AutovalidateLabState extends State<AutovalidateLab> {
       case AutovalidateMode.onUserInteractionIfError:
         return (
           whenAppears:
-              'Chỉ tự động kiểm tra khi người dùng gõ nếu ô đó ĐÃ CÓ LỖI từ trước. Nếu ô chưa có lỗi thì không tự động kiểm tra khi đang gõ.',
+              'Không tự báo lỗi khi đang nhập mới. Sau khi Form đã có lỗi (ví dụ sau khi bấm Kiểm tra), Form kiểm tra lại mọi ô sau mỗi lần gõ cho đến khi hết lỗi.',
           whenSuitable:
               'Tối ưu trải nghiệm chỉnh sửa: không làm phiền khi đang nhập mới, nhưng hỗ trợ phản hồi tức thì khi người dùng sửa lỗi.',
         );
