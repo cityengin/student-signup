@@ -55,21 +55,7 @@ class _SignupScreenState extends State<SignupScreen> {
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
   @override
-  void initState() {
-    super.initState();
-    // [Form] Lắng nghe thay đổi mật khẩu để cập nhật lỗi ô xác nhận mật khẩu sau lần submit thất bại
-    _passwordController.addListener(_onPasswordChanged);
-  }
-
-  void _onPasswordChanged() {
-    if (_autovalidateMode == AutovalidateMode.onUserInteraction) {
-      _confirmPasswordKey.currentState?.validate();
-    }
-  }
-
-  @override
   void dispose() {
-    _passwordController.removeListener(_onPasswordChanged);
 
     // Dispose toàn bộ TextEditingController
     _fullNameController.dispose();
