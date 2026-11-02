@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:student_signup/data/demo_presets.dart';
 import 'package:student_signup/models/student_registration.dart';
 import 'package:student_signup/screens/signup/confirmation_screen.dart';
+import 'package:student_signup/screens/signup/widgets/signup_demo_panel.dart';
 import 'package:student_signup/validators/signup_validators.dart';
 
 // [Form] Màn hình đăng ký thông tin sinh viên với 6 trường nhập liệu và quản lý focus
@@ -95,6 +97,19 @@ class _SignupScreenState extends State<SignupScreen> {
     FocusScope.of(context).unfocus();
   }
 
+  // [Form] Áp dụng dữ liệu mẫu từ preset vào biểu mẫu: xóa trắng form trước rồi gán giá trị
+  // [Form] Gán qua controller không đi qua inputFormatters, nên preset "ABC123" giúp minh họa validator là lớp kiểm tra thứ hai.
+  void _applyPreset(SignupDemoPreset preset) {
+    _resetForm();
+
+    _fullNameController.text = preset.fullName;
+    _studentIdController.text = preset.studentId;
+    _emailController.text = preset.email;
+    _phoneController.text = preset.phone;
+    _passwordController.text = preset.password;
+    _confirmPasswordController.text = preset.confirmPassword;
+  }
+
   // [Form] Xử lý khi nhấn nút Đăng ký hoặc Enter ở ô cuối cùng
   Future<void> _handleSubmit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -172,6 +187,14 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // [Form] Bảng điều khiển demo đặt ở đầu form để hỗ trợ kiểm thử nhanh
+                SignupDemoPanel(
+                  autovalidateMode: _autovalidateMode,
+                  onPresetSelected: _applyPreset,
+                  onClear: _resetForm,
+                ),
+                const SizedBox(height: 16),
+
                 // Header giới thiệu
                 Text(
                   'Thông tin sinh viên',
@@ -188,6 +211,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
+
 
                 // 1. Trường Họ và tên
                 TextFormField(
