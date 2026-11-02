@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:student_signup/models/student_registration.dart';
+import 'package:student_signup/screens/signup/confirmation_screen.dart';
 import 'package:student_signup/validators/signup_validators.dart';
 
 // [Form] Màn hình đăng ký thông tin sinh viên với 6 trường nhập liệu và quản lý focus
@@ -49,7 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  // [Form] Chế độ autovalidate bắt đầu là disabled, chuyển sang onUserInteraction sau lần submit thất bại
+  // [Form] Chế độ autovalidate bắt đầu là disabled, chỉ chuyển sang onUserInteraction sau lần submit thất bại đầu tiên
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
   @override
@@ -88,8 +90,29 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _handleSubmit() {
+  // [Form] Xóa trắng biểu mẫu, xóa lỗi và đưa autovalidate về disabled khi người dùng chọn đăng ký tài khoản khác
+  void _resetForm() {
+    _formKey.currentState?.reset();
+    _fullNameController.clear();
+    _studentIdController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _passwordController.clear();
+    _confirmPasswordController.clear();
+
+    setState(() {
+      _autovalidateMode = AutovalidateMode.disabled;
+      _obscurePassword = true;
+      _obscureConfirmPassword = true;
+    });
+
+    FocusScope.of(context).unfocus();
+  }
+
+  // [Form] Xử lý khi nhấn nút Đăng ký hoặc Enter ở ô cuối cùng
+  Future<void> _handleSubmit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
+
     if (!isValid) {
       setState(() {
         _autovalidateMode = AutovalidateMode.onUserInteraction;
@@ -116,6 +139,31 @@ class _SignupScreenState extends State<SignupScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      return;
+    }
+
+    // Ẩn bàn phím khi thông tin hợp lệ
+    FocusScope.of(context).unfocus();
+
+    // Họ tên, MSSV, email và số điện thoại được trim trước khi đưa vào model
+    final registration = StudentRegistration(
+      fullName: _fullNameController.text.trim(),
+      studentId: _studentIdController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+    );
+
+    // Chuyển sang màn hình xác nhận thông tin
+    final shouldReset = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmationScreen(registration: registration),
+      ),
+    );
+
+    // Nếu người dùng chọn "Đăng ký tài khoản khác" thì xóa toàn bộ dữ liệu và reset form
+    if (shouldReset == true && mounted) {
+      _resetForm();
     }
   }
 
@@ -283,7 +331,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   obscureText: _obscureConfirmPassword,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _handleSubmit(),
-                  validator: (value) => SignupValidators.validateConfirmPassword(
+                  validator: (value) =>
+                      SignupValidators.validateConfirmPassword(
                     value,
                     _passwordController.text,
                   ),
