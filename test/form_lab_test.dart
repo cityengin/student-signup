@@ -288,4 +288,52 @@ void main() {
     // Không xảy ra bất kỳ ngoại lệ overflow nào
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+      '9. Tab 2 - onUserInteractionIfError: gõ sai khi chưa có lỗi thì chưa báo, bấm Kiểm tra thì báo, sửa đúng cả hai ô thì tự hết lỗi',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(buildTestableScreen());
+
+    // Chuyển sang Tab 2
+    final tab2 = find.text('AutovalidateMode');
+    await tester.ensureVisible(tab2);
+    await tester.tap(tab2);
+    await tester.pumpAndSettle();
+
+    // Chọn onUserInteractionIfError
+    final chipOnError =
+        find.byKey(const ValueKey('chip_onUserInteractionIfError'));
+    await tester.ensureVisible(chipOnError);
+    await tester.tap(chipOnError);
+    await tester.pumpAndSettle();
+
+    final autoEmail = find.byKey(const ValueKey('auto_email'));
+    final autoPhone = find.byKey(const ValueKey('auto_phone'));
+    final checkBtn = find.byKey(const ValueKey('auto_check_button'));
+
+    // Gõ sai khi chưa có lỗi -> chưa báo lỗi
+    await tester.ensureVisible(autoEmail);
+    await tester.enterText(autoEmail, 'invalid_mail');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Email không đúng định dạng'), findsNothing);
+
+    // Bấm Kiểm tra -> mới báo lỗi
+    await tester.ensureVisible(checkBtn);
+    await tester.tap(checkBtn);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Email không đúng định dạng'), findsOneWidget);
+    expect(find.text('Vui lòng nhập số điện thoại.'), findsOneWidget);
+
+    // Sửa đúng cả hai ô -> tự hết lỗi mà không cần bấm lại nút Kiểm tra
+    await tester.ensureVisible(autoEmail);
+    await tester.enterText(autoEmail, 'sinhvien@dut.udn.vn');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Email không đúng định dạng'), findsNothing);
+
+    await tester.ensureVisible(autoPhone);
+    await tester.enterText(autoPhone, '0905123456');
+    await tester.pumpAndSettle();
+    expect(find.text('Vui lòng nhập số điện thoại.'), findsNothing);
+  });
 }
+
