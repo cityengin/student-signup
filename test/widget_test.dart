@@ -214,4 +214,66 @@ void main() {
     expect(find.text('Vui lòng kiểm tra các ô báo đỏ'), findsNothing);
     expect(find.text('Vui lòng nhập họ và tên của bạn.'), findsNothing);
   });
+
+  testWidgets(
+      '6. Submit lỗi rồi sửa đúng, đăng ký khác không còn lỗi ở ô xác nhận',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const StudentSignupApp());
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Họ và tên *'),
+      'Lê Đình Vũ',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Mã số sinh viên *'),
+      '102210888',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Email *'),
+      'vu.ld@student.dut.udn.vn',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Số điện thoại *'),
+      '0905123456',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Mật khẩu *'),
+      'MyPassword1',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Xác nhận mật khẩu *'),
+      'MyPassword2',
+    );
+
+    // Lần 1: submit thất bại để bật onUserInteraction
+    final submitButton = find.widgetWithText(FilledButton, 'Đăng ký tài khoản');
+    await tester.ensureVisible(submitButton);
+    await tester.tap(submitButton);
+    await tester.pumpAndSettle();
+
+    // Chờ SnackBar biến mất để không che nút
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+
+    // Lần 2: sửa đúng rồi submit thành công
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Xác nhận mật khẩu *'),
+      'MyPassword1',
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(submitButton);
+    await tester.tap(submitButton);
+    await tester.pumpAndSettle();
+    expect(find.text('Đăng ký tài khoản thành công!'), findsOneWidget);
+
+    final registerAnotherBtn =
+        find.widgetWithText(FilledButton, 'Đăng ký tài khoản khác');
+    await tester.ensureVisible(registerAnotherBtn);
+    await tester.tap(registerAnotherBtn);
+    await tester.pumpAndSettle();
+
+    // Form đã reset thì ô xác nhận không được báo lỗi
+    expect(find.text('Vui lòng nhập lại mật khẩu để xác nhận.'), findsNothing);
+  });
 }
+
